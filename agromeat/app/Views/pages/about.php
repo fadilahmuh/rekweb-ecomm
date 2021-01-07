@@ -1,14 +1,14 @@
 <?= $this->extend('layout/template'); ?>
 
 <?= $this->section('content'); ?>
-<div class="container">
+<div class="container mt-5">
     <div class="row p-5">
         <div class="col">
             <div class="text-center">
                 <img src="/img/ptagro.jpg" alt="">
                 <h1>PT. BERKAH CITRA AGRO</h1>
                 <h2>( AGRO MEATSHOP )</h2>
-                <h2>JL CILIWUNG NO 9 BANDUNG</h2>
+                <h2>JL. CILIWUNG NO 9 BANDUNG</h2>
             </div>
             <br>
             <p><strong>PT. Berkah Citra Agro</strong> didirikan di Bandung pada tanggal 12 Agustus 2012 dengan nomor akta 101 yang dikeluarkan oleh notaris Irma Rachmawati, SH., yang bertempat di Jalan Ciliwung No. 9 Bandung Telp. (022) 7234164/7234165 Fax. (022) 7234157.</p>

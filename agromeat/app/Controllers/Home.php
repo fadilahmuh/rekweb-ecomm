@@ -2,11 +2,21 @@
 
 namespace App\Controllers;
 
+use Wildanfuady\WFcart\WFcart;
+
 class Home extends BaseController
 {
 	public function index()
 	{
-		return view('pages/home');
+		$this->cart = new WFcart();
+		$data =
+			[
+				'title' => 'Home | '
+			];
+		$data['total'] = $this->cart->totals();
+
+
+		return view('pages/home', $data);
 	}
 
 	//--------------------------------------------------------------------

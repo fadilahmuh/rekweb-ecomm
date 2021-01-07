@@ -1,0 +1,40 @@
+.gambar {
+  width: 190px;
+}
+.table > tbody > tr > * {
+  vertical-align: middle;
+}
+
+.notification {
+  /* background-color: #555; */
+  color: white;
+  text-decoration: none;
+  /* padding: 15px 26px; */
+  position: relative;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.notification .badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  padding: 5px 6px;
+  border-radius: 50%;
+  background: red;
+  color: white;
+  font-size: 12%;
+}
+
+html,
+body {
+  height: 100%;
+}
+.carousel,
+.item,
+.active {
+  height: 100%;
+}
+.carousel-inner {
+  height: 100%;
+}
