@@ -106,15 +106,6 @@ use Config\Validation;
                     </tbody>
                     <tfoot>
                         <tr>
-                            <!-- <td class="text-right mt-3 pt-3"> -->
-                            <!-- <h3>Total</h3> -->
-                            <!-- Total -->
-                            <!-- </td> -->
-                            <!-- <td class="mt-3 pt-3"> -->
-                            <!-- <h3>Rp. <?php //echo number_format($total, 0, 0, '.'); 
-                                            ?></h3> -->
-
-                            <!-- </td> -->
                             <td colspan="3" class="text-right mt-3 pt-3">
                                 <p>Total Rp. <?php echo number_format($c_total, 0, 0, '.'); ?></p>
                             </td>
@@ -122,7 +113,7 @@ use Config\Validation;
                     </tfoot>
                 </table>
                 <h3>Data Pemesan</h3>
-                <form action="/cart/checkout" method="post">
+                <form action="/cart/checkout" method="post" enctype="multipart/form-data">
                     <?= csrf_field(); ?>
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -161,8 +152,8 @@ use Config\Validation;
                         <label for="note">Catatan:</label>
                         <input type="text" class="form-control" id="note" name="note" placeholder="Note">
                     </div>
+                    <label for="gambar">Bukti Transaksi</label>
                     <div class="form-group row">
-                        <label for="gambar" class="col-sm-2 col-form-label ">Gambar</label>
                         <div class="col-sm-2">
                             <img src="/img/bill.png" class="img-thumbnail img-preview">
                         </div>
@@ -283,4 +274,19 @@ use Config\Validation;
     });
     document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 </script>
+
+<script>
+    function previewImg() {
+        const gambar = document.querySelector('#gambar');
+        const gambarLabel = document.querySelector('.custom-file-label');
+        const imgPreview = document.querySelector('.img-preview');
+        gambarLabel.textContent = gambar.files[0].name;
+        const fileGambar = new FileReader();
+        fileGambar.readAsDataURL(gambar.files[0]);
+        fileGambar.onload = function(e) {
+            imgPreview.src = e.target.result;
+        }
+    }
+</script>
+
 <?= $this->endSection(); ?>

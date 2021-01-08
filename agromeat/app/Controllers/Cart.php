@@ -6,14 +6,17 @@ use App\Models\ProductModel;
 use CodeIgniter\Debug\Toolbar\Collectors\Views;
 use Wildanfuady\WFcart\WFcart;
 use App\Models\OrderModel;
+use App\Models\OrderdetailModel;
 
 class Cart extends BaseController
 {
     protected $orderModel;
+    protected $orderdetailModel;
     public function __construct()
     {
         $this->product = new ProductModel();
         $this->orderModel = new OrderModel();
+        $this->orderdetailModel = new OrderdetailModel();
         $this->cart = new WFcart();
         helper('form');
     }
@@ -100,19 +103,36 @@ class Cart extends BaseController
         $data['total'] = $this->cart->totals();
         $maps = 'https://maps.google.com/?q=' . $this->request->getVar('lat') . ',' . $this->request->getVar('lng');
 
-        // echo $data['c_total'];
+        $fileGambar = $this->request->getFile('gambar');
+        if ($fileGambar->getError() == 4) {
+            $namaGambar = 'bill.png';
+        } else {
+            $fileGambar->move('img/bukti');
+            $namaGambar = $fileGambar->getName();
+        }
         $this->orderModel->save([
-            'id' => $uniqcode,
+            'order_id' => $uniqcode,
             'nama_pemesan' => $this->request->getVar('name'),
             'no_pemesan' =>  $this->request->getVar('telephone'),
             'email_pemesan' => $this->request->getVar('email'),
             'alamat_order' => $this->request->getVar('alamat'),
             'maps' =>  $maps,
+            'bukti_pembayaran' => $namaGambar,
             'status' => 'Unchecked',
             'total' => $data['c_total'],
             'note' => $this->request->getVar('note')
-            // 'bukti_pembayaran' => 'Unchecked'
         ]);
+
+        foreach ($data['items'] as $key => $item) {
+            $subs = $item['quantity'] * $item['price'];
+            $this->orderdetailModel->save([
+                'id_order' => $uniqcode,
+                'product_id' => $item['id'],
+                'jumlah' =>  $item['quantity'],
+                'subtotal' => $subs
+            ]);
+        }
+
         $this->cart->clear();
         session()->setFlashdata('notif', 'Terima Kasih Telah Order Di AgroMeat Shop');
         return redirect()->to('/');

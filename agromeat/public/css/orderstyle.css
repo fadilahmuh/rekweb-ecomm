@@ -1,0 +1,58 @@
+body {
+  background-color: #bdc3c7;
+}
+.table-fixed {
+  width: 100%;
+  overflow-x: auto;
+  background-color: #f3f3f3;
+}
+.table-fixed tbody {
+  height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+.table-fixed thead,
+tbody,
+tr,
+td,
+th {
+  display: block;
+  overflow-x: auto;
+}
+.table-fixed tbody td {
+  float: left;
+  overflow-x: auto;
+  height: 150px;
+  font-family: Courier New;
+  font-weight: bold;
+}
+.table-fixed thead tr th {
+  float: left;
+  background-color: #1e90ff;
+  border-color: #1e90ff;
+}
+
+.table-fixed tbody {
+  height: 300px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.table-fixed thead,
+.table-fixed tbody,
+.table-fixed tr,
+.table-fixed td,
+.table-fixed th {
+  display: block;
+}
+
+.table-fixed tbody td,
+.table-fixed tbody th,
+.table-fixed thead > tr > th {
+  float: left;
+  position: relative;
+}
+
+.example-image {
+  height: 100px;
+}

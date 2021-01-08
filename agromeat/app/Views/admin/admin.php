@@ -131,6 +131,7 @@
                     <li><a href="/profil"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span>Profile</span></a></li>
                     <li class="header">Data</li>
                     <li><a href="/adminproduct"><i class="fa fa-shopping-bag" aria-hidden="true"></i><span>Data Produk</span></a></li>
+                    <li><a href="/adminorder"><i class="fa fa-shopping-bag" aria-hidden="true"></i><span>Data Order</span></a></li>
                     <!-- <li><a href=""><i class="fa fa-book"></i><span>Add Data</span></a></li> -->
                 </ul>
             </section>
