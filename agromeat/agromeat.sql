@@ -99,9 +99,9 @@ CREATE TABLE IF NOT EXISTS `auth_logins` (
   PRIMARY KEY (`id`),
   KEY `email` (`email`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
--- Dumping data for table agromeat.auth_logins: ~20 rows (approximately)
+-- Dumping data for table agromeat.auth_logins: ~24 rows (approximately)
 /*!40000 ALTER TABLE `auth_logins` DISABLE KEYS */;
 INSERT INTO `auth_logins` (`id`, `ip_address`, `email`, `user_id`, `date`, `success`) VALUES
 	(1, '::1', 'ivan', NULL, '2020-12-28 07:46:15', 0),
@@ -125,7 +125,9 @@ INSERT INTO `auth_logins` (`id`, `ip_address`, `email`, `user_id`, `date`, `succ
 	(19, '::1', 'fadil@yahoo.com', 2, '2021-01-01 06:59:58', 1),
 	(20, '::1', 'fadil@yahoo.com', 2, '2021-01-01 21:33:59', 1),
 	(21, '::1', 'fadil@yahoo.com', 2, '2021-01-04 23:46:32', 1),
-	(22, '::1', 'fadil@yahoo.com', 2, '2021-01-05 01:37:20', 1);
+	(22, '::1', 'fadil@yahoo.com', 2, '2021-01-05 01:37:20', 1),
+	(23, '::1', 'fadil@yahoo.com', 2, '2021-01-07 08:08:01', 1),
+	(24, '::1', 'fadil@yahoo.com', 2, '2021-01-07 14:02:03', 1);
 /*!40000 ALTER TABLE `auth_logins` ENABLE KEYS */;
 
 -- Dumping structure for table agromeat.auth_permissions
@@ -134,10 +136,13 @@ CREATE TABLE IF NOT EXISTS `auth_permissions` (
   `name` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- Dumping data for table agromeat.auth_permissions: ~0 rows (approximately)
+-- Dumping data for table agromeat.auth_permissions: ~2 rows (approximately)
 /*!40000 ALTER TABLE `auth_permissions` DISABLE KEYS */;
+INSERT INTO `auth_permissions` (`id`, `name`, `description`) VALUES
+	(1, 'admin', 'Site Administrator'),
+	(2, 'user', 'Regular User Site');
 /*!40000 ALTER TABLE `auth_permissions` ENABLE KEYS */;
 
 -- Dumping structure for table agromeat.auth_reset_attempts
@@ -204,6 +209,39 @@ INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`
 	(1, '2017-11-20-223112', 'Myth\\Auth\\Database\\Migrations\\CreateAuthTables', 'default', 'Myth\\Auth', 1609161891, 1);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 
+-- Dumping structure for table agromeat.order
+CREATE TABLE IF NOT EXISTS `order` (
+  `id` int(11) NOT NULL,
+  `nama_pemesan` varchar(50) DEFAULT NULL,
+  `no_pemesan` char(20) DEFAULT NULL,
+  `email_pemesan` varchar(50) NOT NULL,
+  `alamat_order` varchar(255) DEFAULT NULL,
+  `maps` varchar(100) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `total` int(11) DEFAULT NULL,
+  `bukti_pembayaran` varchar(100) DEFAULT NULL,
+  `note` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Dumping data for table agromeat.order: ~0 rows (approximately)
+/*!40000 ALTER TABLE `order` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order` ENABLE KEYS */;
+
+-- Dumping structure for table agromeat.order_detail
+CREATE TABLE IF NOT EXISTS `order_detail` (
+  `id` int(11) DEFAULT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `jumlah` int(11) DEFAULT NULL,
+  `subtotal` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Dumping data for table agromeat.order_detail: ~0 rows (approximately)
+/*!40000 ALTER TABLE `order_detail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order_detail` ENABLE KEYS */;
+
 -- Dumping structure for table agromeat.produk
 CREATE TABLE IF NOT EXISTS `produk` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -220,9 +258,9 @@ CREATE TABLE IF NOT EXISTS `produk` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 
--- Dumping data for table agromeat.produk: ~6 rows (approximately)
+-- Dumping data for table agromeat.produk: ~7 rows (approximately)
 /*!40000 ALTER TABLE `produk` DISABLE KEYS */;
 INSERT INTO `produk` (`id`, `nama_produk`, `slug`, `Department`, `Stok`, `harga`, `satuan`, `gambar`, `desc`, `fungsi`, `Lainnya`, `created_at`, `updated_at`) VALUES
 	(1, 'Sirloin', 'sirloin', 'Daging Domba', 10, 158000, 'kg', 'sirloin.jpg', 'Sirloin (Has Luar) adalah daging yang di ambil dari punggung bagian sisi atas.', 'BBQ | Steak | Sate | Teriyaki | Sukiyaki | Lada Hitam', '', NULL, '2020-12-30 20:57:51'),
@@ -230,7 +268,8 @@ INSERT INTO `produk` (`id`, `nama_produk`, `slug`, `Department`, `Stok`, `harga`
 	(4, 'Blade / Paha Depan', 'blade-paha-depan', 'Daging Sapi', 1, 135000, 'kg', 'blade.jpg', 'Untuk memasak rendang, gepuk, atau ditumis', '', NULL, '2020-12-30 08:03:26', '2020-12-30 08:03:26'),
 	(5, 'Lamusir', 'lamusir', 'Daging Domba', 1, 137000, 'kg', 'lamusir.jpg', 'Daging yang berasal dari bagian forequarter sapi.', 'Sate | Sop | Semur | Rawon', '', '2020-12-30 08:22:35', '2020-12-30 10:57:32'),
 	(11, 'Oxtail Reguler', 'oxtail-reguler', 'Daging Domba', 1, 99000, 'kg', 'ox-reg_1.jpg', 'Untuk masakan sop buntut bakar atau goreng maupun bakar. Bisa untuk rawon buntut', '', '', '2020-12-30 22:35:44', '2020-12-30 23:02:20'),
-	(12, 'Cincang Standar', 'cincang-standar', 'Daging Sapi', 1, 115000, 'kg', 'default.jpg', 'Untuk dimasak saus spaghetti, patty burger, atau meatball.', '', '', '2020-12-30 22:39:51', '2020-12-30 22:39:51');
+	(12, 'Cincang Standar', 'cincang-standar', 'Daging Sapi', 1, 115000, 'kg', 'default.jpg', 'Untuk dimasak saus spaghetti, patty burger, atau meatball.', '', '', '2020-12-30 22:39:51', '2020-12-30 22:39:51'),
+	(13, 'Tenderloin / Has Dalam', 'tenderloin-has-dalam', 'Daging Sapi', 9, 174000, 'kg', 'fix-tenderloin-2-w.jpg', 'Tenderloin (Has Dalam) adalah daging yang di ambil dari pinggang bagian sisi dalam', 'Barbeque | Sate | Daging Panggang', '', '2021-01-07 16:29:49', '2021-01-07 16:29:49');
 /*!40000 ALTER TABLE `produk` ENABLE KEYS */;
 
 -- Dumping structure for table agromeat.users
