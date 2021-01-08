@@ -1,5 +1,7 @@
 <?= $this->extend('layout/template'); ?>
 
+use Config\Validation;
+
 <?= $this->section('content'); ?>
 <div class="container p-5">
     <div class="carousel-inner mt-5">
@@ -120,30 +122,165 @@
                     </tfoot>
                 </table>
                 <h3>Data Pemesan</h3>
-                <form>
+                <form action="/cart/checkout" method="post">
+                    <?= csrf_field(); ?>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com">
+                    </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="inputEmail4">Nama</label>
-                            <input type="email" class="form-control" id="inputEmail4" placeholder="Ivan Pakpahan">
+                            <label for="name">Nama</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Ivan Pakpahan">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="inputTel">No.Handphone</label>
-                            <input type="tel" class="form-control" id="inputTel" placeholder="085234569874">
+                            <label for="telephone">No.Handphone</label>
+                            <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="085234569874">
+                        </div>
+                    </div>
+                    <div class="form-group justify-content-center">
+                        <label for="alamat">Alamat</label>
+                        <div class="geocoder">
+                            <div id="geocoder"></div>
+                        </div>
+                        <div id="map"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <input type="hidden" class="form-control" id="lat" name="lat" placeholder="Kordinat">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input type="hidden" class="form-control" id="lng" name="lng" placeholder="Kordinat">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="inputAddress">Alamat Lengkap</label>
-                        <input type="text" class="form-control" id="inputAddress" placeholder="Jl.Aaaaaaa, Kel.bbbbb, Kec,cccccc, RT/RW 0X/1X, No.xx">
+                        <label for="alamat">Alamat Detail</label>
+                        <input type="text" class="form-control" id="alamat" name="alamat" placeholder="Gg.abcdefghijkl , RT/RW 0X/1X, No.XX">
                     </div>
                     <div class="form-group">
-                        <label for="inputAddress2">Catatan:</label>
-                        <input type="text" class="form-control" id="inputAddress2" placeholder="Note">
+                        <label for="note">Catatan:</label>
+                        <input type="text" class="form-control" id="note" name="note" placeholder="Note">
                     </div>
-                    <a target="_blank" href="cart/checkout" class="btn btn-primary float-right">Pesan Sekarang</a>
+                    <div class="form-group row">
+                        <label for="gambar" class="col-sm-2 col-form-label ">Gambar</label>
+                        <div class="col-sm-2">
+                            <img src="/img/bill.png" class="img-thumbnail img-preview">
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input <?= ($validation->hasError('gambar')) ? 'is-invalid' : ''; ?>" id="gambar" name="gambar" onchange="previewImg()">
+                                <div class="invalid-feedback">
+                                    <?= $validation->getError('gambar'); ?>
+                                </div>
+                                <label class="custom-file-label" for="gambar">Choose file</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary float-right">Pesan Sekarang</button>
                 </form>
+
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    #map {
+        position: relative;
+        /* left: 40px; */
+        /* bottom: 200px; */
+        height: 300px;
+        width: 100%;
+        /* right: 110px; */
+    }
+
+    .geocoder {
+        position: relative;
+        /* left: 350px; */
+        /* top: 290px; */
+    }
+</style>
+
+
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css' type='text/css' />
+<script>
+    var user_location = [107.634987, -6.897559];
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZmFraHJhd3kiLCJhIjoiY2pscWs4OTNrMmd5ZTNra21iZmRvdTFkOCJ9.15TZ2NtGk_AtUvLd27-8xA';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v9',
+        center: user_location,
+        zoom: 17
+    });
+    var geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+    });
+    var marker;
+    map.on('load', function() {
+        addMarker(user_location, 'load');
+        add_markers(saved_markers);
+        geocoder.on('result', function(ev) {
+            alert("Lokasi ditemukan");
+            console.log(ev.result.center);
+        });
+    });
+    map.on('click', function(e) {
+        marker.remove();
+        addMarker(e.lngLat, 'click');
+        document.getElementById("lat").value = e.lngLat.lat;
+        document.getElementById("lng").value = e.lngLat.lng;
+
+    });
+
+    function addMarker(ltlng, event) {
+        if (event === 'click') {
+            user_location = ltlng;
+        }
+        marker = new mapboxgl.Marker({
+                draggable: true,
+                color: "#d02922"
+            })
+            .setLngLat(user_location)
+            .addTo(map)
+            .on('dragend', onDragEnd);
+    }
+
+    function add_markers(coordinates) {
+        var geojson = (saved_markers == coordinates ? saved_markers : '');
+        console.log(geojson);
+        geojson.forEach(function(marker) {
+            console.log(marker);
+            new mapboxgl.Marker()
+                .setLngLat(marker)
+                .addTo(map);
+        });
+
+    }
+
+    function onDragEnd() {
+        var lngLat = marker.getLngLat();
+        document.getElementById("lat").value = lngLat.lat;
+        document.getElementById("lng").value = lngLat.lng;
+        console.log('lng: ' + lngLat.lng + '<br />lat: ' + lngLat.lat);
+    }
+    $('#signupForm').submit(function(event) {
+        event.preventDefault();
+        var lat = $('#lat').val();
+        var lng = $('#lng').val();
+        var url = 'locations_model.php?add_location&lat=' + lat + '&lng=' + lng;
+        $.ajax({
+            url: url,
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                alert(data);
+                location.reload();
+            }
+        });
+    });
+    document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+</script>
 <?= $this->endSection(); ?>

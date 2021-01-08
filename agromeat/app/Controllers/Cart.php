@@ -5,20 +5,25 @@ namespace App\Controllers;
 use App\Models\ProductModel;
 use CodeIgniter\Debug\Toolbar\Collectors\Views;
 use Wildanfuady\WFcart\WFcart;
+use App\Models\OrderModel;
 
 class Cart extends BaseController
 {
+    protected $orderModel;
     public function __construct()
     {
         $this->product = new ProductModel();
+        $this->orderModel = new OrderModel();
         $this->cart = new WFcart();
         helper('form');
     }
 
     public function index()
     {
+        session();
         $data = [
-            'title' => 'Your Cart | Agro Meat Shop'
+            'title' => 'Your Cart | Agro Meat Shop',
+            'validation' =>  \Config\Services::validation()
         ];
         $data['items'] = $this->cart->totals();
         $data['c_total'] = $this->cart->count_totals();
@@ -88,18 +93,28 @@ class Cart extends BaseController
 
     public function checkout()
     {
+        date_default_timezone_set("Asia/Jakarta");
+        $uniqcode = date("Ymd") . date("his") . substr($this->request->getVar('telephone'), -2);
         $data['items'] = $this->cart->totals();
         $data['c_total'] = $this->cart->count_totals();
         $data['total'] = $this->cart->totals();
-        $text = "Halo kak, saya mau order.%0A%0A";
-        $no = 0;
-        foreach ($data['items'] as $key => $item) {
-            $no++;
-            $text = $text . $no . ". " . $item['name'] . "%0A" . "  Qty : " . $item['quantity'] . "%0A" . "  Sub-total : Rp. " . number_format($item['quantity'] * $item['price'], 0, 0, '.') . "%0A%0A";
-        }
-        $text = $text . "%0A" . "*Total = " . number_format($data['c_total'], 0, 0, '.') . "* %0A%0A" . "----------------------";
-        $link = "https://web.whatsapp.com/send?phone=6288229499331&text=" . $text;
+        $maps = 'https://maps.google.com/?q=' . $this->request->getVar('lat') . ',' . $this->request->getVar('lng');
+
+        // echo $data['c_total'];
+        $this->orderModel->save([
+            'id' => $uniqcode,
+            'nama_pemesan' => $this->request->getVar('name'),
+            'no_pemesan' =>  $this->request->getVar('telephone'),
+            'email_pemesan' => $this->request->getVar('email'),
+            'alamat_order' => $this->request->getVar('alamat'),
+            'maps' =>  $maps,
+            'status' => 'Unchecked',
+            'total' => $data['c_total'],
+            'note' => $this->request->getVar('note')
+            // 'bukti_pembayaran' => 'Unchecked'
+        ]);
         $this->cart->clear();
-        return redirect()->to($link);
+        session()->setFlashdata('notif', 'Terima Kasih Telah Order Di AgroMeat Shop');
+        return redirect()->to('/');
     }
 }
